@@ -1,0 +1,11 @@
+#set($title = $msg.get("openid.server.homepage.title"))
+#template("startpage.vm")
+<div class="main layoutsubsection">
+  <h1>$title</h1>
+#if($enabled)
+  <p>$msg.get("openid.server.homepage.enabled_description")</p>
+#else
+  <p>$msg.get("openid.server.homepage.disabled_description")</p>
+#end
+</div>
+#template("endpage.vm")

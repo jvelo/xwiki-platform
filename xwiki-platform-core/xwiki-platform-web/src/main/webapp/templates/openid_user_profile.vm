@@ -1,0 +1,7 @@
+#set($title = $msg.get("openid.server.user_profile.title"))
+#template("startpage.vm")
+<div class="main layoutsubsection">
+  <h1>$title</h1>
+  <p>$msg.get("openid.server.user_profile.text", [$username])</p>
+</div>
+#template("endpage.vm")

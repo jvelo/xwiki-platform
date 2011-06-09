@@ -9,16 +9,22 @@
       #error($msg.get('core.register.passwordMismatch'))
     #elseif($reg == -3)
       #error($msg.get('core.register.userAlreadyExists'))
+    #elseif($reg== -13)
+      #error("$msg.get('openid.registration.openIdAlreadyRegistered', [$openid_identifier])")
     #elseif($reg == -4)
       #error($msg.get('core.register.invalidUsername'))
+    #elseif($reg==-14)
+      #error("$msg.get('openid.registration.invalidOpenID')")
     #elseif($reg == -8)
       #error($msg.get('core.register.userAlreadyExists'))
     #else
       #error($msg.get('core.register.registerFailed', [$reg]))
     #end
-  #elseif($reg)
+  #elseif($reg && $reg != 2 && $reg != 3)
     #set($xwname = "XWiki.${request.xwikiname}")
     #info($msg.get('core.register.successful', [$xwiki.getUserName($xwname), ${escapetool.xml($request.xwikiname)}]))
+  #elseif($reg && $reg == 3)
+    #info("$msg.get('openid.registration.successful', [$username, $openid_identifier])")
   #end
   #if(!$reg || $reg < 0)
     <form id="register" action="" method="post" class="xform third">
@@ -64,7 +70,56 @@
       </div>
       <div class="buttons"><span class="buttonwrapper"><input type="submit" value="$msg.get('core.register.submit')" class="button"/></span></div>
     </form>
-  #end
+	<p><img src="$xwiki.getSkinFile('icons/xwiki/openid.png')" /> $msg.get("openid.registration.welcome")</p>
+	<form id="register" action="$doc.getURL("register")" method="post">
+      <div>
+        <input type="hidden" name="template" value="XWiki.XWikiUserTemplate" />
+        <input type="hidden" name="register" value="openid-discover"/>
+        #set($class = $xwiki.getClass("XWiki.XWikiUsers"))
+        #set($obj = $class.newObject())
+        #set($serverobj = $class.newObject())
+        #set($discard = $doc.use("XWiki.XWikiUsers"))
+	    <dl>
+	      <dt>$msg.get("openid.common.identifier_field_label")</dt>
+	      <dd><input type="text" id="openid_identifier" name="openid_identifier" class="openid_identifier" /></dd>
+	    </dl>
+	    <span class="buttonwrapper"><input type="submit" value="$msg.get("openid.registration.discovery_submit")" class="button"/></span>
+	  </div>
+	</form>
+   #elseif($reg && $reg == 2)
+   <p>$msg.get("openid.registration.confirmation")</p> 
+   <form id="register" action="$doc.getURL("register", "register=openid-confirm")" method="post">
+     <div>
+       <input type="hidden" name="template" value="XWiki.XWikiUserTemplate" />
+       <input type="hidden" name="register-confirm" value="1"/>
+       <input type="hidden" name="openid_identifier" value="$!openid_identifier"/>
+       #set($class = $xwiki.getClass("XWiki.XWikiUsers"))
+       #set($obj = $class.newObject())
+       #set($serverobj = $class.newObject())
+       #set($discard = $doc.use("XWiki.XWikiUsers"))
+       #if($first_name)
+         $obj.set("first_name", $first_name)
+       #end
+       #if($last_name)
+         $obj.set("last_name", $last_name)
+       #end
+       <dl>
+         <dt>$msg.get("openid.common.identifier_field_label")</dt>
+         <dd class="openid_identifier">$openid_identifier</dd>
+         #set($prop = $class.first_name)
+         <dt>$msg.get("core.register.firstName")</dt>
+         <dd>$doc.displayEdit($prop, "register_",  $obj)</dd>
+         #set($prop = $class.last_name)
+         <dt>$msg.get("core.register.lastName")</dt>
+         <dd>$doc.displayEdit($prop, "register_",  $obj)</dd>
+         #set($prop = $class.email)
+         <dt>$msg.get("core.register.email")</dt>
+         <dd>$doc.displayEdit($prop, "register_",  $obj)</dd>
+       </dl>
+       <span class="buttonwrapper"><input type="submit" value="$msg.get("openid.registration.confirmation_submit")" class="button"/></span>
+     </div>
+   </form>
+   #end
 #else
   ## An override exists in the wiki, display it
   #set($doc = $xwiki.getDocument('XWiki.Registration'))

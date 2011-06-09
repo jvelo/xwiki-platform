@@ -47,6 +47,24 @@
   </tr>
 </table>
 <div class="buttons"><span class="buttonwrapper"><input type="submit" class="button" value="$msg.get('login')"/></span></div>
+<div class="buttons"><input type="submit" class="button" value="$msg.get("login")"/></div>
+</form>
+<div>
+  <form id="openIDLoginForm" action="$doc.getURL("loginsubmit")" method="post">
+  <div class="hidden"><input type="hidden" name="xredirect" value="$!request.xredirect"/>
+    <input type="hidden" name="authentication_method" value="openid"/>
+    #if("$!request.srid" != "") <input type="hidden" name="srid" value="$!request.srid"/> #end
+  </div>
+  <p class="xwikimessage">... or with your OpenID</p>
+  <label for="openid_identifier">$msg.get("openid.common.identifier_field_label"):</label>
+  <input type="text" id="openid_identifier" name="openid_identifier" class="openid_identifier" value="" />
+</div>
+<div>
+  <input id="openid_rememberme" type="checkbox" name="j_rememberme" value="true"/>
+  <label for="openid_rememberme">$msg.get("remembermeonthiscomp")</label>
+</div>
+<div class="buttons"><span class="buttonwrapper"><input type="submit" class="button" value="$msg.get('login')"/></span></div>
+</form>
 ## TODO: Replace this with an interface extension once IX are implemented
 #if($xwiki.exists('XWiki.ResetPassword'))
   <div style="font-size: 70%; margin-top: 2em;">Forgot your <a href="$xwiki.getURL('XWiki.ForgotUsername')">username</a> or <a href="$xwiki.getURL('XWiki.ResetPassword')">password</a>?</div>

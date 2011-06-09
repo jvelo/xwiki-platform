@@ -208,6 +208,13 @@
             <forward name="register" path="/templates/register.vm"/>
         </action>
 
+        <action path="/attachopenid/"
+                type="com.xpn.xwiki.web.AttachOpenIdAction"
+                name="attachopenid"
+                scope="request">
+            <forward name="attachopenid" path="/templates/attach_openid.vm"/>
+        </action>
+
         <action path="/propupdate/"
                 type="com.xpn.xwiki.web.PropUpdateAction"
                 name="propupdate"
@@ -407,11 +414,24 @@
                 type="org.xwiki.captcha.internal.DefaultImageCaptchaAction">
         </action>
 
-
         <action path="/unknown/"
                 type="com.xpn.xwiki.web.UnknownAction"
                 name="unknown"
                 unknown="true"
+                scope="request">
+        </action>
+
+        <!-- OpenID server -->
+        <action path="/openid/"
+                type="com.xpn.xwiki.web.OpenIdServerAction"
+                name="openid"
+                scope="request">
+        </action>
+
+        <!-- OpenID user page -->
+        <action path="/openid/*"
+                type="com.xpn.xwiki.web.OpenIdServerAction"
+                name="openiduser"
                 scope="request">
         </action>
 

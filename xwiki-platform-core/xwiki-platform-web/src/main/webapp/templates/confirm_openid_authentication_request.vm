@@ -1,0 +1,13 @@
+#template("startpage.vm")
+<div class="main layoutsubsection">
+<h1>$msg.get("openid.server.authentication_request.title")</h1>
+<p>$msg.get("openid.server.authentication_request.desc", [$site, $openid_identifier])</p>
+<form id="openid_authentication_request" action="$openid_server_url" method="post">
+  <div>
+    <input type="hidden" name="confirmation" value="user_response" />
+    <input type="hidden" name="openid.mode" value="checkid_setup" />
+    <span class="buttonwrapper"><input type="submit" name="login" value="$msg.get("openid.server.authentication_request.login")"/> <input type="submit" name="cancel" value="$msg.get("openid.server.authentication_request.cancel")"/></span>
+  </div>
+</form>
+</div>
+#template("endpage.vm")

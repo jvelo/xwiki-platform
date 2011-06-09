@@ -1,0 +1,53 @@
+#template("startpage.vm")
+<div class="main layoutsubsection">
+
+<h1>$msg.get("openid.attach.title")</h1>
+#if($status && $status <= 0)
+  #if($status == -1)
+    #warning("$msg.get('openid.attach.alreadyAttachedOpenId', [$current_openid_identifier])")
+  #elseif($status == -2)
+    #error("$msg.get('openid.registration.invalidOpenID')")
+  #elseif($status == -3)
+    #error("$msg.get('openid.attach.openIdAlreadyRegistered', [$openid_identifier])")
+  #elseif($status == -4)
+    #error("$msg.get('openid.common.discovery_cancelled')")
+  #elseif($status == -5)
+    #error("$msg.get('openid.common.discovery_failed')")
+  #else
+    #error("$msg.get('openid.attach.internalError')")
+  #end
+#elseif($status && $status != 1)
+  #info("$msg.get('openid.attach.successful', [$openid_identifier, $username])")
+#end
+#if(!$status || ($status < -1))
+<p>$msg.get("openid.attach.welcome")</p>
+<form id="register" action="$doc.getURL("attachopenid")" method="post">
+  <div>
+    <input type="hidden" name="template" value="XWiki.XWikiUserTemplate" />
+    <input type="hidden" name="attach_openid" value="discover-openid"/>
+    <dl>
+      <dt>$msg.get("openid.common.identifier_field_label")</dt>
+      <dd><input type="text" id="openid_identifier" name="openid_identifier" class="openid_identifier" /></dd>
+    </dl>
+    <span class="buttonwrapper"><input type="submit" value="$msg.get("openid.attach.submit")"/></span>
+  </div>
+</form>
+#elseif($status && ($status == 1 || $status == -1))
+<p>$msg.get("openid.attach.confirm")</p>
+<form id="register" action="$doc.getURL("attachopenid")" method="post">
+  <div>
+    <input type="hidden" name="template" value="XWiki.XWikiUserTemplate" />
+    <input type="hidden" name="attach_openid" value="attach-openid"/>
+    <input type="hidden" name="openid_identifier" value="$!openid_identifier"/>
+    <dl>
+      <dt>$msg.get("openid.common.identifier_field_label")</dt>
+      <dd class="openid_identifier">$openid_identifier</dd>
+      <dt>$msg.get("openid.attach.user")</dt>
+      <dd>$username</dd>
+    </dl>
+    <span class="buttonwrapper"><input type="submit" value="$msg.get("openid.attach.submit")"/></span>
+  </div>
+</form>
+#end
+</div>
+#template("endpage.vm")

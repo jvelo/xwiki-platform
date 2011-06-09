@@ -238,6 +238,20 @@
     </servlet-class>
   </servlet>
 
+  <!--  The OpenID server servlet -->
+  <servlet>
+    <servlet-name>OpenIdServer</servlet-name>
+    <servlet-class>com.xpn.xwiki.web.OpenIdServerServlet</servlet-class>
+    <init-param>
+      <param-name>application</param-name>
+      <param-value>ApplicationResources</param-value>
+    </init-param>
+    <init-param>
+      <param-name>xwiki</param-name>
+      <param-value>com.xpn.xwiki.XWiki</param-value>
+    </init-param>
+  </servlet>
+
   <!-- RESTful API mapping -->
   <servlet-mapping>
     <servlet-name>RestletServlet</servlet-name>
@@ -262,6 +276,18 @@
   <servlet-mapping>
     <servlet-name>action</servlet-name>
     <url-pattern>/xwiki/*</url-pattern>
+  </servlet-mapping>
+
+  <!--
+  <servlet-mapping>
+    <servlet-name>OpenIdServer</servlet-name>
+    <url-pattern>/openid/</url-pattern>
+  </servlet-mapping>
+  -->
+
+  <servlet-mapping>
+    <servlet-name>OpenIdServer</servlet-name>
+    <url-pattern>/openid/*</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>

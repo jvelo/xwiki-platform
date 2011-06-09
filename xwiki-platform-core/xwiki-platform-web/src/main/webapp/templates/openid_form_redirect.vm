@@ -1,0 +1,16 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>$msg.get("openid.form_redirect.title")</title>
+</head>
+<body onload="document.forms['openid-form-redirection'].submit();">
+  <p>$msg.get("openid.form_redirect.description")</p>
+  <form name="openid-form-redirection" action="$op_endpoint" method="post" accept-charset="utf-8">
+    #foreach($parameter_key in $openid_parameters.keySet())
+      <input type="hidden" name="$parameter_key" value="$openid_parameters.get($parameter_key)"/>
+    #end
+    <button type="submit">$msg.get("openid.form_redirect.button")</button>
+  </form>
+</body>
+</html>
