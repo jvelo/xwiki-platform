@@ -36,4 +36,7 @@
     select distinct doc.fullName from XWikiDocument as doc, BaseObject as obj
     where obj.name=doc.fullName and obj.className='XWiki.XWikiUsers'
   </query>
+  <query name="getUserDocByOpenIdIdentifier">
+    select doc.fullName from XWikiDocument as doc, BaseObject as obj, StringProperty as prop where doc.fullName=obj.name and obj.className='XWiki.OpenIdIdentifier' and obj.id=prop.id.id and prop.id.name='identifier' and prop.value=:identifier
+  </query>
 </hibernate-mapping>

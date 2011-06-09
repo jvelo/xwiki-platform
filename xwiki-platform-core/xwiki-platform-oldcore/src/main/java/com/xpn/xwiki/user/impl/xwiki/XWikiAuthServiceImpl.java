@@ -567,6 +567,18 @@ public class XWikiAuthServiceImpl extends AbstractXWikiAuthService
                 result = new PasswordClass().getEquivalentPassword(stored, password).equals(stored);
             }
 
+            if (doc.getObject("XWiki.OpenIdIdentifier") != null) {
+                // For users having an OpenID the password doesn't need to be adjusted because it is set to the current
+                // value during the login process
+                String passwd = doc.getStringValue("XWiki.XWikiUsers", "password");
+                result = (password.equals(passwd));
+            }
+            if (result == false && doc.getObject("XWiki.XWikiUsers") != null) {
+                // We only allow empty password from users having a XWikiUsers object.
+                final String stored = userObject.getStringValue("password");
+                result = new PasswordClass().getEquivalentPassword(stored, password).equals(stored);
+            }
+            
             if (LOG.isDebugEnabled()) {
                 if (result) {
                     LOG.debug("Password check for user " + username + " successful");

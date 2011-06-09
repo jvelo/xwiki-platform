@@ -294,6 +294,13 @@
       <version>2.0</version>
     </dependency>
 
+    <!-- OpenID support -->
+    <dependency>
+    	<groupId>org.openid4java</groupId>
+    	<artifactId>openid4java</artifactId>
+    	<version>0.9.3</version>
+    </dependency>
+
     <!-- XML processing -->
     <dependency>
       <groupId>dom4j</groupId>
@@ -1246,6 +1253,10 @@
               **/web/XWikiRequestProcessor.java,
               **/web/XWikiResourceManagerImpl.java,
               **/web/XWikiResponse.java,
+              **/web/OpenIdServerServlet.java,
+              **/plugin/openid/OpenIdHelper.java,
+              **/web/AttachOpenIdAction.java,
+              **/web/RegisterAction.java,
               **/web/XWikiServletContext.java,
               **/web/XWikiServletRequest.java,
               **/web/XWikiServletRequestStub.java,

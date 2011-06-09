@@ -109,6 +109,7 @@ public class Utils
         } else {
             response.setContentType("text/html; charset=" + context.getWiki().getEncoding());
         }
+        
 
         String action = context.getAction();
         if ((!"download".equals(action)) && (!"skin".equals(action))) {
@@ -132,6 +133,10 @@ public class Utils
                     response.setDateHeader("Expires", (new Date()).getTime() + 30 * 24 * 3600 * 1000L);
                 }
             }
+        }
+        
+        if("openid_xrds".equals(action)) {
+            response.setContentType("application/xrds+xml");
         }
 
         if (("download".equals(action)) || ("skin".equals(action))) {
