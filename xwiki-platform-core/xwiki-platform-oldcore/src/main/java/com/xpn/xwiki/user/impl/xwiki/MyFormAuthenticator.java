@@ -324,8 +324,7 @@ public class MyFormAuthenticator extends FormAuthenticator implements XWikiAuthe
             AuthRequest auth_request = manager.authenticate(discovered, return_to_url);
 
             // set the realm
-            auth_request.setRealm(((XWikiServletURLFactory) context.getURLFactory()).getServerURL(context).toString()
-                + ((XWikiServletURLFactory) context.getURLFactory()).getContextPath());
+            auth_request.setRealm(((XWikiServletURLFactory) context.getURLFactory()).getServerURL(context).toString());
 
             if (LOG.isInfoEnabled()) {
                 LOG.info("Redirecting user to OP (OpenID identifier: " + openid_identifier + ")");
@@ -352,9 +351,8 @@ public class MyFormAuthenticator extends FormAuthenticator implements XWikiAuthe
             if (LOG.isInfoEnabled()) {
                 LOG.info("OpenID discovery failed: " + e.getMessage());
             }
-
             // present error to the user
-            context.put("message", "LOGinfailed");
+            context.put("message", "Open ID login failed. Reason: " + e.getMessage());
         }
 
         return true;

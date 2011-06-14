@@ -162,21 +162,21 @@ public class RegisterAction extends XWikiAction
             AuthRequest auth_request = manager.authenticate(discovered, return_to_url);
 
             // set the realm
-            auth_request.setRealm(((XWikiServletURLFactory) context.getURLFactory()).getServerURL(context).toString()
-                + ((XWikiServletURLFactory) context.getURLFactory()).getContextPath());
+            auth_request.setRealm(((XWikiServletURLFactory) context.getURLFactory()).getServerURL(context).toString());
 
             // attribute exchange (request user data from the OP to speed-up the registration process)
             FetchRequest att_exchange = FetchRequest.createFetchRequest();
-            att_exchange.addAttribute("email", "http://schema.openid.net/contact/email", true);
-            att_exchange.addAttribute("firstname", "http://axschema.org/namePerson/first", true);
-            att_exchange.addAttribute("lastname", "http://axschema.org/namePerson/last", true);
-
+            att_exchange.addAttribute("email", "http://schema.openid.net/contact/email", false);
+            att_exchange.addAttribute("firstname", "http://axschema.org/namePerson/first", false);
+            att_exchange.addAttribute("lastname", "http://axschema.org/namePerson/last", false);
+            att_exchange.addAttribute("fullname", "http://schema.openid.net/contact/fullname", false);
+            
             SRegRequest simple_reg_req = SRegRequest.createFetchRequest();
-            simple_reg_req.addAttribute("fullname", true);
-            simple_reg_req.addAttribute("firstname", true);
-            simple_reg_req.addAttribute("lastname", true);
-            simple_reg_req.addAttribute("nickname", true);
-            simple_reg_req.addAttribute("email", true);
+            simple_reg_req.addAttribute("fullname", false);
+            simple_reg_req.addAttribute("firstname", false);
+            simple_reg_req.addAttribute("lastname", false);
+            simple_reg_req.addAttribute("nickname", false);
+            simple_reg_req.addAttribute("email", false);
 
             auth_request.addExtension(att_exchange);
             auth_request.addExtension(simple_reg_req);
