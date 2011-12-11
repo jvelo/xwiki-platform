@@ -19,6 +19,9 @@
  */
 package com.xpn.xwiki.plugin.skinx;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.xpn.xwiki.XWikiContext;
 
 /**
@@ -29,6 +32,7 @@ import com.xpn.xwiki.XWikiContext;
  */
 public class CssSkinExtensionPlugin extends AbstractDocumentSkinExtensionPlugin
 {
+
     /** The name of the XClass storing the code for this type of extensions. */
     public static final String SSX_CLASS_NAME = "XWiki.StyleSheetExtension";
 
@@ -37,7 +41,16 @@ public class CssSkinExtensionPlugin extends AbstractDocumentSkinExtensionPlugin
      * extension content.
      */
     public static final String PLUGIN_NAME = "ssx";
+    
+    /**
+     * The map of supported preprocessors.
+     */
+    private static final Map<String, String> SUPPORTED_PREPROCESSORS = new HashMap<String, String>();
 
+    static {
+        SUPPORTED_PREPROCESSORS.put("less", "LESS");
+    }
+    
     /**
      * XWiki plugin constructor.
      * 
@@ -90,7 +103,7 @@ public class CssSkinExtensionPlugin extends AbstractDocumentSkinExtensionPlugin
     {
         return SSX_CLASS_NAME;
     }
-
+    
     /**
      * {@inheritDoc}
      * 
@@ -102,6 +115,12 @@ public class CssSkinExtensionPlugin extends AbstractDocumentSkinExtensionPlugin
         return "Stylesheet";
     }
 
+    @Override
+    protected Map<String, String> getSupportedPreprocessors()
+    {
+        return SUPPORTED_PREPROCESSORS;
+    }
+    
     /**
      * {@inheritDoc}
      * <p>

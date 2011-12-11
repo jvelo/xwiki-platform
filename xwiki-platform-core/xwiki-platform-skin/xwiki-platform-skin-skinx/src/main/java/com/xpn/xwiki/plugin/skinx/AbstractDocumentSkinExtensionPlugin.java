@@ -119,6 +119,14 @@ public abstract class AbstractDocumentSkinExtensionPlugin extends AbstractSkinEx
     protected abstract String getExtensionClassName();
 
     /**
+     * The supported pre-processord of extension of this type. This will populate the extension XClass preprocessor
+     * list.
+     * 
+     * @return A map of code name/pretty name of supported preprocessors.
+     */
+    protected abstract Map<String, String> getSupportedPreprocessors();
+
+    /**
      * A user-friendly name for this type of resource, used in the auto-generated class document.
      * 
      * @return The user-friendly name for this type of resource.
@@ -256,6 +264,8 @@ public abstract class AbstractDocumentSkinExtensionPlugin extends AbstractSkinEx
             boolean needsUpdate = false;
             String useOptions = "currentPage=Always on this page|onDemand=On demand|always=Always on this wiki";
 
+
+
             BaseClass bclass = doc.getxWikiClass();
             if (context.get("initdone") != null) {
                 return bclass;
@@ -268,6 +278,7 @@ public abstract class AbstractDocumentSkinExtensionPlugin extends AbstractSkinEx
             needsUpdate |= bclass.addStaticListField(USE_FIELDNAME, "Use this extension", useOptions);
             needsUpdate |= bclass.addBooleanField("parse", "Parse content", "yesno");
             needsUpdate |= bclass.addStaticListField("cache", "Caching policy", "long|short|default|forbid");
+            needsUpdate |= bclass.addStaticListField("preprocessor", "Preprocessor", getPreprocessorListInitialValue());
 
             if (StringUtils.isBlank(doc.getCreator())) {
                 needsUpdate = true;
@@ -332,5 +343,17 @@ public abstract class AbstractDocumentSkinExtensionPlugin extends AbstractSkinEx
         } else {
             extensions.add(document.getFullName());
         }
+    }
+    
+    /**
+     * @return the initialization value for this extension preprocessor XClass field.
+     */
+    private String getPreprocessorListInitialValue()
+    {
+        String preprocessorValues = "none=None";
+        for (String key : this.getSupportedPreprocessors().keySet()) {
+            preprocessorValues += ("|" + key + "=" + this.getSupportedPreprocessors().get(key));
+        }
+        return preprocessorValues;
     }
 }

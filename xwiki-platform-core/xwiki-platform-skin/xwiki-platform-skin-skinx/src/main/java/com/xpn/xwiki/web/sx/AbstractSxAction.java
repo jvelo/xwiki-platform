@@ -27,9 +27,14 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
+import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.skinx.PreprocessingException;
+import org.xwiki.skinx.SkinExtensionPreprocessor;
 
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
+import com.xpn.xwiki.web.Utils;
 import com.xpn.xwiki.web.XWikiAction;
 import com.xpn.xwiki.web.XWikiRequest;
 import com.xpn.xwiki.web.XWikiResponse;
@@ -67,6 +72,9 @@ public abstract class AbstractSxAction extends XWikiAction
 
     /** If the user specifies this url parameter equals false, we will send uncompressed script content. */
     private static final String COMPRESS_SCRIPT_REQUEST_PARAMETER = "minify";
+    
+    /** If the user specifies this url parameter to an existing preprocessor, we will use it. */
+    private static final String PREPROCESSOR_REQUEST_PARAMETER = "preprocessor";
 
     /** @return the logging object of the concrete subclass. */
     protected abstract Logger getLogger();
@@ -88,6 +96,11 @@ public abstract class AbstractSxAction extends XWikiAction
 
         String extensionContent = sxSource.getContent();
 
+        if (StringUtils.isNotEmpty(request.get(PREPROCESSOR_REQUEST_PARAMETER))) {
+            String hint = request.get(PREPROCESSOR_REQUEST_PARAMETER);
+            extensionContent = this.preprocess(extensionContent, hint);
+        }
+        
         response.setContentType(sxType.getContentType());
 
         if (sxSource.getLastModifiedDate() > 0) {
@@ -113,6 +126,7 @@ public abstract class AbstractSxAction extends XWikiAction
             request.get(COMPRESS_SCRIPT_REQUEST_PARAMETER), "true"))) {
             extensionContent = sxType.getCompressor().compress(extensionContent);
         }
+        
 
         try {
             response.setContentLength(extensionContent.getBytes(RESPONSE_CHARACTER_SET).length);
@@ -159,4 +173,24 @@ public abstract class AbstractSxAction extends XWikiAction
      */
     public abstract Extension getExtensionType();
 
+    /**
+     * Applies the preprocessor with the passed hint to the passed content.
+     * 
+     * @param content the content to be preprocessed
+     * @param hint the hint of the preprocessor
+     * @return the processed content
+     */
+    private String preprocess(String content, String hint)
+    {
+        ComponentManager cm = Utils.getComponent(ComponentManager.class);
+        try {
+            SkinExtensionPreprocessor preprocessor = cm.lookup(SkinExtensionPreprocessor.class, hint);
+            return  preprocessor.process(content);
+        } catch (ComponentLookupException e) {
+            getLogger().warn("Failed to find skin extension preprocessor with [{}]", hint);
+        } catch (PreprocessingException e) {
+            getLogger().warn("Preprocessor with hint [{}] raised an error while processing", hint);
+        }
+        return content;
+    }
 }
