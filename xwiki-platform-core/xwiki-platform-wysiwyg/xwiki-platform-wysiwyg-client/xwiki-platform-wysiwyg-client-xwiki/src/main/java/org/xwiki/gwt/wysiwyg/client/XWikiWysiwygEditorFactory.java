@@ -32,6 +32,7 @@ import org.xwiki.gwt.wysiwyg.client.plugin.indent.IndentPluginFactory;
 import org.xwiki.gwt.wysiwyg.client.plugin.internal.DefaultPluginFactoryManager;
 import org.xwiki.gwt.wysiwyg.client.plugin.justify.JustifyPluginFactory;
 import org.xwiki.gwt.wysiwyg.client.plugin.line.LinePluginFactory;
+import org.xwiki.gwt.wysiwyg.client.plugin.link.LinkPluginFactory;
 import org.xwiki.gwt.wysiwyg.client.plugin.list.ListPluginFactory;
 import org.xwiki.gwt.wysiwyg.client.plugin.macro.MacroPluginFactory;
 import org.xwiki.gwt.wysiwyg.client.plugin.readonly.ReadOnlyPluginFactory;
@@ -46,18 +47,12 @@ import org.xwiki.gwt.wysiwyg.client.syntax.SyntaxValidatorManager;
 import org.xwiki.gwt.wysiwyg.client.syntax.internal.DefaultSyntaxValidator;
 import org.xwiki.gwt.wysiwyg.client.syntax.internal.DefaultSyntaxValidatorManager;
 
-/**
- * Factory for {@link WysiwygEditor}. Holds the responsibility of injecting the {@link PluginFactoryManager} and
- * {@link SyntaxValidatorManager} in each editor created.
- * 
- * @version $Id$
- */
-public final class StandaloneWysiwygEditorFactory implements WysiwygEditorFactory
+public class XWikiWysiwygEditorFactory implements WysiwygEditorFactory
 {
     /**
      * The singleton factory instance.
      */
-    private static StandaloneWysiwygEditorFactory instance;
+    private static XWikiWysiwygEditorFactory instance;
 
     /**
      * The {@link SyntaxValidatorManager} injected in each editor created.
@@ -73,13 +68,15 @@ public final class StandaloneWysiwygEditorFactory implements WysiwygEditorFactor
      * Initializes the {@link SyntaxValidatorManager} and {@link PluginFactoryManager} instances that will be injected
      * in the future editors.
      */
-    private StandaloneWysiwygEditorFactory()
+    private XWikiWysiwygEditorFactory()
     {
         svm = new DefaultSyntaxValidatorManager();
         svm.addSyntaxValidator(new DefaultSyntaxValidator("xhtml/1.0"));
         // add additional SyntaxValidator for other syntaxes
 
         pfm = new DefaultPluginFactoryManager();
+        
+        // Plugins of the standalone editor
         pfm.addPluginFactory(ReadOnlyPluginFactory.getInstance());
         pfm.addPluginFactory(LinePluginFactory.getInstance());
         pfm.addPluginFactory(SubmitPluginFactory.getInstance());
@@ -100,16 +97,18 @@ public final class StandaloneWysiwygEditorFactory implements WysiwygEditorFactor
         pfm.addPluginFactory(MacroPluginFactory.getInstance());
         pfm.addPluginFactory(EmbedPluginFactory.getInstance());
         pfm.addPluginFactory(StylePluginFactory.getInstance());
-        // add additional PluginFactory for other plug-ins
+        
+        // XWiki-specific plugins
+        pfm.addPluginFactory(LinkPluginFactory.getInstance());
     }
 
     /**
      * @return the singleton factory instance.
      */
-    public static synchronized StandaloneWysiwygEditorFactory getInstance()
+    public static synchronized XWikiWysiwygEditorFactory getInstance()
     {
         if (instance == null) {
-            instance = new StandaloneWysiwygEditorFactory();
+            instance = new XWikiWysiwygEditorFactory();
         }
         return instance;
     }
