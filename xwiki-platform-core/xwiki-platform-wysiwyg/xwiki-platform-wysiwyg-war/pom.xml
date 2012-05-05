@@ -56,7 +56,13 @@
     </dependency>
     <dependency>
       <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-wysiwyg-client</artifactId>
+      <artifactId>xwiki-platform-wysiwyg-client-standalone</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-wysiwyg-client-xwiki</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -121,7 +127,14 @@
               <artifactItems>
                 <artifactItem>
                   <groupId>org.xwiki.platform</groupId>
-                  <artifactId>xwiki-platform-wysiwyg-client</artifactId>
+                  <artifactId>xwiki-platform-wysiwyg-client-xwiki</artifactId>
+                  <version>${project.version}</version>
+                  <classifier>shared</classifier>
+                  <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF/lib</outputDirectory>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.xwiki.platform</groupId>
+                  <artifactId>xwiki-platform-wysiwyg-client-standalone</artifactId>
                   <version>${project.version}</version>
                   <classifier>shared</classifier>
                   <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF/lib</outputDirectory>
