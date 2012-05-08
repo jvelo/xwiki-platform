@@ -26,14 +26,11 @@ import org.xwiki.gwt.wysiwyg.client.plugin.embed.EmbedPluginFactory;
 import org.xwiki.gwt.wysiwyg.client.plugin.font.FontPluginFactory;
 import org.xwiki.gwt.wysiwyg.client.plugin.format.FormatPluginFactory;
 import org.xwiki.gwt.wysiwyg.client.plugin.history.HistoryPluginFactory;
-import org.xwiki.gwt.wysiwyg.client.plugin.image.ImagePluginFactory;
-import org.xwiki.gwt.wysiwyg.client.plugin.importer.ImportPluginFactory;
 import org.xwiki.gwt.wysiwyg.client.plugin.indent.IndentPluginFactory;
 import org.xwiki.gwt.wysiwyg.client.plugin.internal.DefaultPluginFactoryManager;
 import org.xwiki.gwt.wysiwyg.client.plugin.justify.JustifyPluginFactory;
 import org.xwiki.gwt.wysiwyg.client.plugin.line.LinePluginFactory;
 import org.xwiki.gwt.wysiwyg.client.plugin.list.ListPluginFactory;
-import org.xwiki.gwt.wysiwyg.client.plugin.macro.MacroPluginFactory;
 import org.xwiki.gwt.wysiwyg.client.plugin.readonly.ReadOnlyPluginFactory;
 import org.xwiki.gwt.wysiwyg.client.plugin.separator.SeparatorPluginFactory;
 import org.xwiki.gwt.wysiwyg.client.plugin.style.StylePluginFactory;
@@ -52,7 +49,7 @@ import org.xwiki.gwt.wysiwyg.client.syntax.internal.DefaultSyntaxValidatorManage
  * 
  * @version $Id$
  */
-public final class StandaloneWysiwygEditorFactory implements WysiwygEditorFactory
+public class StandaloneWysiwygEditorFactory implements WysiwygEditorFactory
 {
     /**
      * The singleton factory instance.
@@ -62,18 +59,18 @@ public final class StandaloneWysiwygEditorFactory implements WysiwygEditorFactor
     /**
      * The {@link SyntaxValidatorManager} injected in each editor created.
      */
-    private SyntaxValidatorManager svm;
+    protected SyntaxValidatorManager svm;
 
     /**
      * The {@link PluginFactoryManager} injected in each editor created.
      */
-    private PluginFactoryManager pfm;
+    protected PluginFactoryManager pfm;
 
     /**
      * Initializes the {@link SyntaxValidatorManager} and {@link PluginFactoryManager} instances that will be injected
      * in the future editors.
      */
-    private StandaloneWysiwygEditorFactory()
+    protected StandaloneWysiwygEditorFactory()
     {
         svm = new DefaultSyntaxValidatorManager();
         svm.addSyntaxValidator(new DefaultSyntaxValidator("xhtml/1.0"));
@@ -95,9 +92,6 @@ public final class StandaloneWysiwygEditorFactory implements WysiwygEditorFactor
         pfm.addPluginFactory(ColorPluginFactory.getInstance());
         pfm.addPluginFactory(SymbolPluginFactory.getInstance());
         pfm.addPluginFactory(TablePluginFactory.getInstance());
-        pfm.addPluginFactory(ImagePluginFactory.getInstance());
-        pfm.addPluginFactory(ImportPluginFactory.getInstance());
-        pfm.addPluginFactory(MacroPluginFactory.getInstance());
         pfm.addPluginFactory(EmbedPluginFactory.getInstance());
         pfm.addPluginFactory(StylePluginFactory.getInstance());
         // add additional PluginFactory for other plug-ins

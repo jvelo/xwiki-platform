@@ -27,53 +27,6 @@
   <stylesheet src="stylesheets/Wysiwyg.css" />
   <entry-point class="org.xwiki.gwt.wysiwyg.client.XWikiWysiwyg" />
 
-  <extend-property name="locale" values="ca,cs,de,es,fr,it,lv,ru,sk,sv,zh,zh_TW" />
-
-  <!-- Custom linker that adds the document type declaration to the generated permutations. -->
-  <define-linker name="StandardsMode" class="org.xwiki.gwt.core.linker.StandardsModeIFrameLinker" />
-  <add-linker name="StandardsMode" />
-
-  <!-- ReadOnlyPlugin -->
-  <replace-with class="org.xwiki.gwt.wysiwyg.client.plugin.readonly.ReadOnlyKeyboardHandler">
-    <when-type-is class="org.xwiki.gwt.wysiwyg.client.plugin.readonly.ReadOnlyKeyboardHandler" />
-  </replace-with>
-
-  <replace-with class="org.xwiki.gwt.wysiwyg.client.plugin.readonly.SafariReadOnlyKeyboardHandler">
-    <when-type-is class="org.xwiki.gwt.wysiwyg.client.plugin.readonly.ReadOnlyKeyboardHandler" />
-    <when-property-is name="user.agent" value="safari" />
-  </replace-with>
-
-  <replace-with class="org.xwiki.gwt.wysiwyg.client.plugin.readonly.OperaReadOnlyKeyboardHandler">
-    <when-type-is class="org.xwiki.gwt.wysiwyg.client.plugin.readonly.ReadOnlyKeyboardHandler" />
-    <when-property-is name="user.agent" value="opera" />
-  </replace-with>
-
-  <!-- LinePlugin -->
-  <replace-with class="org.xwiki.gwt.wysiwyg.client.plugin.line.LinePlugin">
-    <when-type-is class="org.xwiki.gwt.wysiwyg.client.plugin.line.LinePlugin" />
-  </replace-with>
-
-  <replace-with class="org.xwiki.gwt.wysiwyg.client.plugin.line.IELinePlugin">
-    <when-type-is class="org.xwiki.gwt.wysiwyg.client.plugin.line.LinePlugin" />
-    <any>
-      <when-property-is name="user.agent" value="ie6" />
-      <when-property-is name="user.agent" value="ie8" />
-    </any>
-  </replace-with>
-
-  <!-- SubmitPlugin -->
-  <replace-with class="org.xwiki.gwt.wysiwyg.client.plugin.submit.SubmitPlugin">
-    <when-type-is class="org.xwiki.gwt.wysiwyg.client.plugin.submit.SubmitPlugin" />
-  </replace-with>
-
-  <replace-with class="org.xwiki.gwt.wysiwyg.client.plugin.submit.internal.IEOldSubmitPlugin">
-    <when-type-is class="org.xwiki.gwt.wysiwyg.client.plugin.submit.SubmitPlugin" />
-    <any>
-      <when-property-is name="user.agent" value="ie6" />
-      <when-property-is name="user.agent" value="ie8" />
-    </any>
-  </replace-with>
-
   <!-- ImageConfigDOMWriter -->
   <replace-with class="org.xwiki.gwt.wysiwyg.client.plugin.image.ImageConfigDOMWriter">
     <when-type-is class="org.xwiki.gwt.wysiwyg.client.plugin.image.ImageConfigDOMWriter" />
@@ -91,16 +44,4 @@
     <when-property-is name="user.agent" value="ie6" />
   </replace-with>
 
-  <!-- PasteFilter -->
-  <replace-with class="org.xwiki.gwt.wysiwyg.client.plugin.importer.PasteFilter">
-    <when-type-is class="org.xwiki.gwt.wysiwyg.client.plugin.importer.PasteFilter" />
-  </replace-with>
-
-  <replace-with class="org.xwiki.gwt.wysiwyg.client.plugin.importer.IEPasteFilter">
-    <when-type-is class="org.xwiki.gwt.wysiwyg.client.plugin.importer.PasteFilter" />
-    <any>
-      <when-property-is name="user.agent" value="ie6" />
-      <when-property-is name="user.agent" value="ie8" />
-    </any>
-  </replace-with>
 </module>

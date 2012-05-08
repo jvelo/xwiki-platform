@@ -22,9 +22,14 @@ package org.xwiki.gwt.wysiwyg;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.xwiki.gwt.wysiwyg.client.plugin.image.ImageConfigDOMWriterTest;
+import org.xwiki.gwt.wysiwyg.client.plugin.image.ImageConfigJSONSerializerTest;
+import org.xwiki.gwt.wysiwyg.client.plugin.image.ImageMetaDataExtractorTest;
+import org.xwiki.gwt.wysiwyg.client.plugin.image.exec.InsertImageExecutableTest;
 import org.xwiki.gwt.wysiwyg.client.plugin.link.EmptyLinkFilterTest;
 import org.xwiki.gwt.wysiwyg.client.plugin.link.LinkMetaDataExtractorTest;
 import org.xwiki.gwt.wysiwyg.client.plugin.link.LinkConfigTest;
+import org.xwiki.gwt.wysiwyg.client.plugin.macro.MacroCallTest;
 
 import com.google.gwt.junit.tools.GWTTestSuite;
 
@@ -47,7 +52,12 @@ public class XWikiWysiwygTestSuite extends GWTTestSuite
         suite.addTestSuite(EmptyLinkFilterTest.class);
         suite.addTestSuite(LinkMetaDataExtractorTest.class);
         suite.addTestSuite(LinkConfigTest.class);
-
+        suite.addTestSuite(ImageConfigJSONSerializerTest.class);
+        suite.addTestSuite(ImageConfigDOMWriterTest.class);
+        suite.addTestSuite(ImageMetaDataExtractorTest.class);
+        suite.addTestSuite(InsertImageExecutableTest.class);
+        suite.addTestSuite(MacroCallTest.class);
+        
         return suite;
     }
 

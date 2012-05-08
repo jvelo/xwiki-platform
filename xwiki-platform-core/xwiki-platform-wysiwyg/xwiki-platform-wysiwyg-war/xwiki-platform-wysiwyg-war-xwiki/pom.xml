@@ -42,40 +42,8 @@
   <dependencies>
     <dependency>
       <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-gwt-dom</artifactId>
-      <version>${project.version}</version>
-      <!-- Only needed at build time -->
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-gwt-user</artifactId>
-      <version>${project.version}</version>
-      <!-- Only needed at build time -->
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-wysiwyg-client-standalone</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-wysiwyg-client-xwiki</artifactId>
       <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-wysiwyg-server</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-wysiwyg-plugin-api</artifactId>
-      <version>${project.version}</version>
-      <!-- Only needed at build time -->
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -86,30 +54,6 @@
   </dependencies>
   <build>
     <plugins>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>gwt-maven-plugin</artifactId>
-        <configuration>
-          <module>${xwe.module}</module>
-          <webappDirectory>${gwt.output.directory}</webappDirectory>
-          <style>${gwt.style}</style>
-          <disableCastChecking>true</disableCastChecking>
-          <disableClassMetadata>true</disableClassMetadata>
-          <!--
-            In order to prevent the "java.lang.InternalError: Can't connect to X11 window server using ':1.0' as the
-            value of the DISPLAY variable." error message we have to run the GWT compiler with the headless AWT option.
-            See http://code.google.com/support/bin/answer.py?hl=en&answer=71442
-          -->
-          <extraJvmArgs>-Xmx1024m -Xss1024k -Djava.awt.headless=true</extraJvmArgs>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>compile</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
