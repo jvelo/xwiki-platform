@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.xwiki.platform</groupId>
     <artifactId>xwiki-platform-core</artifactId>
-    <version>4.1-SNAPSHOT</version>
+    <version>4.2-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-platform-web</artifactId>
   <name>XWiki Platform - Web Resources</name>
@@ -83,6 +83,7 @@
             <include>js/prototype/prototype.js</include>
             <include>uicomponents/widgets/list/xlist.js</include>
             <include>uicomponents/suggest/suggest.js</include>
+            <include>uicomponents/model/entityReference.js</include>
           </sourceIncludes>
           <specIncludes>
             <include>spec/**/*.js</include>

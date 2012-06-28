@@ -19,6 +19,7 @@
  */
 package org.xwiki.extension.xar;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,6 +53,7 @@ import com.xpn.xwiki.objects.classes.BaseClass;
 import com.xpn.xwiki.objects.classes.NumberClass;
 import com.xpn.xwiki.store.XWikiStoreInterface;
 import com.xpn.xwiki.test.AbstractBridgedComponentTestCase;
+import com.xpn.xwiki.util.XWikiStubContextProvider;
 
 public class XarExtensionHandlerTest extends AbstractBridgedComponentTestCase
 {
@@ -82,8 +84,8 @@ public class XarExtensionHandlerTest extends AbstractBridgedComponentTestCase
     {
         super.setUp();
 
-        this.repositoryUtil = new RepositoryUtil(getComponentManager());
-        this.repositoryUtil.setup(getMockery());
+        this.repositoryUtil = new RepositoryUtil(getComponentManager(), getMockery());
+        this.repositoryUtil.setup();
 
         // mock
 
@@ -218,10 +220,15 @@ public class XarExtensionHandlerTest extends AbstractBridgedComponentTestCase
 
                 allowing(mockXWiki).getStore();
                 will(returnValue(mockStore));
+
+                allowing(mockXWiki).prepareResources(with(any(XWikiContext.class)));
             }
         });
 
         getContext().setUserReference(this.contextUser);
+
+        ((XWikiStubContextProvider) getComponentManager().getInstance(XWikiStubContextProvider.class))
+            .initialize(getContext());
 
         // lookup
 
@@ -229,20 +236,21 @@ public class XarExtensionHandlerTest extends AbstractBridgedComponentTestCase
         this.xarExtensionRepository = getComponentManager().getInstance(InstalledExtensionRepository.class, "xar");
 
         // Get rid of wiki macro listener
-        getComponentManager().<ObservationManager>getInstance(ObservationManager.class).removeListener(
+        getComponentManager().<ObservationManager> getInstance(ObservationManager.class).removeListener(
             "RegisterMacrosOnImportListener");
     }
 
     private XarInstalledExtension install(ExtensionId extensionId, String wiki) throws Throwable
     {
         InstallRequest installRequest = new InstallRequest();
+        installRequest.setProperty("user.reference", getContext().getUserReference());
         installRequest.addExtension(extensionId);
         if (wiki != null) {
             installRequest.addNamespace("wiki:" + wiki);
         }
         Job installJob = this.taskManager.executeJob(InstallJob.JOBTYPE, installRequest);
 
-        List<LogEvent> errors = installJob.getStatus().getLog(LogLevel.ERROR);
+        List<LogEvent> errors = installJob.getStatus().getLog().getLogs(LogLevel.ERROR);
         if (!errors.isEmpty()) {
             throw errors.get(0).getThrowable();
         }
@@ -253,20 +261,23 @@ public class XarExtensionHandlerTest extends AbstractBridgedComponentTestCase
     private void uninstall(ExtensionId extensionId, String wiki) throws Throwable
     {
         UninstallRequest uninstallRequest = new UninstallRequest();
+        uninstallRequest.setProperty("user.reference", getContext().getUserReference());
         uninstallRequest.addExtension(extensionId);
         if (wiki != null) {
             uninstallRequest.addNamespace("wiki:" + wiki);
         }
         Job uninstallJob = this.taskManager.executeJob(UninstallJob.JOBTYPE, uninstallRequest);
 
-        List<LogEvent> errors = uninstallJob.getStatus().getLog(LogLevel.ERROR);
+        List<LogEvent> errors = uninstallJob.getStatus().getLog().getLogs(LogLevel.ERROR);
         if (!errors.isEmpty()) {
             throw errors.get(0).getThrowable();
         }
     }
 
+    // Tests
+
     @Test
-    public void testInstall() throws Throwable
+    public void testInstallOnWiki() throws Throwable
     {
         XWikiDocument existingDocument = new XWikiDocument(new DocumentReference("wiki", "space", "page"));
         existingDocument.setDefaultLanguage("en");
@@ -322,7 +333,7 @@ public class XarExtensionHandlerTest extends AbstractBridgedComponentTestCase
     }
 
     @Test
-    public void testUpgrade() throws Throwable
+    public void testUpgradeOnWiki() throws Throwable
     {
         install(this.localXarExtensiontId1, "wiki");
 
@@ -332,32 +343,36 @@ public class XarExtensionHandlerTest extends AbstractBridgedComponentTestCase
 
         // validate
 
-        XWikiDocument page = this.mockXWiki.getDocument(new DocumentReference("wiki", "space", "page"), getContext());
+        XWikiDocument samepage = this.mockXWiki.getDocument(new DocumentReference("wiki", "samespace", "samepage"), getContext());
 
-        Assert.assertFalse("Document wiki.space.page has not been saved in the database", page.isNew());
+        Assert.assertEquals("Wrong versions", "1.1", samepage.getVersion());
+        
+        XWikiDocument modifiedpage = this.mockXWiki.getDocument(new DocumentReference("wiki", "space", "page"), getContext());
 
-        Assert.assertEquals("Wrong content", "content 2", page.getContent());
-        Assert.assertEquals("Wrong author", this.contextUser, page.getAuthorReference());
-        Assert.assertEquals("Wrong versions", "2.1", page.getVersion());
+        Assert.assertFalse("Document wiki.space.page has not been saved in the database", modifiedpage.isNew());
 
-        BaseClass baseClass = page.getXClass();
+        Assert.assertEquals("Wrong content", "content 2", modifiedpage.getContent());
+        Assert.assertEquals("Wrong author", this.contextUser, modifiedpage.getAuthorReference());
+        Assert.assertEquals("Wrong versions", "2.1", modifiedpage.getVersion());
+
+        BaseClass baseClass = modifiedpage.getXClass();
         Assert.assertNotNull(baseClass.getField("property"));
         Assert.assertEquals("property", baseClass.getField("property").getName());
         Assert.assertSame(NumberClass.class, baseClass.getField("property").getClass());
 
-        XWikiDocument page2 =
+        XWikiDocument newPage =
             this.mockXWiki.getDocument(new DocumentReference("wiki", "space2", "page2"), getContext());
 
-        Assert.assertFalse("Document wiki.space2.page2 has not been saved in the database", page2.isNew());
+        Assert.assertFalse("Document wiki.space2.page2 has not been saved in the database", newPage.isNew());
 
-        XWikiDocument page1 =
+        XWikiDocument removedPage =
             this.mockXWiki.getDocument(new DocumentReference("wiki", "space1", "page1"), getContext());
 
-        Assert.assertTrue("Document wiki.space1.page1 has not been removed from the database", page1.isNew());
+        Assert.assertTrue("Document wiki.space1.page1 has not been removed from the database", removedPage.isNew());
     }
 
     @Test
-    public void testUninstall() throws Throwable
+    public void testUninstallFromWiki() throws Throwable
     {
         install(this.localXarExtensiontId1, "wiki");
 
@@ -375,5 +390,47 @@ public class XarExtensionHandlerTest extends AbstractBridgedComponentTestCase
             this.mockXWiki.getDocument(new DocumentReference("wiki", "space1", "page1"), getContext());
 
         Assert.assertTrue("Document wiki.space1.page1 has not been removed from the database", page1.isNew());
+    }
+
+    @Test
+    public void testInstallOnRoot() throws Throwable
+    {
+        getMockery().checking(new Expectations()
+        {
+            {
+                allowing(mockXWiki).getVirtualWikisDatabaseNames(with(any(XWikiContext.class)));
+                will(returnValue(Arrays.asList("wiki1", "wiki2")));
+            }
+        });
+
+        // install
+
+        install(this.localXarExtensiontId1, null);
+
+        // validate
+
+        XWikiDocument pageWiki1 =
+            this.mockXWiki.getDocument(new DocumentReference("wiki1", "space1", "page1"), getContext());
+
+        Assert.assertFalse(pageWiki1.isNew());
+
+        XWikiDocument pageWiki2 =
+            this.mockXWiki.getDocument(new DocumentReference("wiki2", "space1", "page1"), getContext());
+
+        Assert.assertFalse(pageWiki2.isNew());
+
+        // uninstall
+
+        uninstall(this.localXarExtensiontId1, null);
+
+        // validate
+
+        pageWiki1 = this.mockXWiki.getDocument(new DocumentReference("wiki1", "space1", "page1"), getContext());
+
+        Assert.assertTrue(pageWiki1.isNew());
+
+        pageWiki2 = this.mockXWiki.getDocument(new DocumentReference("wiki2", "space1", "page1"), getContext());
+
+        Assert.assertTrue(pageWiki2.isNew());
     }
 }

@@ -28,12 +28,14 @@ import org.xml.sax.SAXException;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.extension.xar.internal.handler.ConflictQuestion;
+import org.xwiki.extension.xar.internal.handler.ConflictQuestion.GlobalAction;
 import org.xwiki.extension.xar.internal.handler.packager.DefaultPackager;
 import org.xwiki.extension.xar.internal.handler.packager.NotADocumentException;
 import org.xwiki.extension.xar.internal.handler.packager.PackageConfiguration;
 import org.xwiki.extension.xar.internal.handler.packager.XarEntry;
 import org.xwiki.extension.xar.internal.handler.packager.XarEntryMergeResult;
 import org.xwiki.extension.xar.internal.handler.packager.XarFile;
+import org.xwiki.logging.LogLevel;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
@@ -57,6 +59,12 @@ public class DocumentImporterHandler extends DocumentHandler
     private XarEntryMergeResult mergeResult;
 
     private PackageConfiguration configuration;
+
+    /**
+     * Attachment are imported before trying to merge a document for memory handling reasons so we need to know if there
+     * was really an existing document before starting to import attachments.
+     */
+    private Boolean hasCurrentDocument;
 
     public DocumentImporterHandler(DefaultPackager packager, ComponentManager componentManager, String wiki)
     {
@@ -122,6 +130,10 @@ public class DocumentImporterHandler extends DocumentHandler
         ConflictQuestion question =
             new ConflictQuestion(currentDocument, previousDocument, nextDocument, mergedDocument);
 
+        if (mergedDocument == null) {
+            question.setGlobalAction(GlobalAction.NEXT);
+        }
+
         if (this.configuration != null && this.configuration.getJobStatus() != null) {
             try {
                 this.configuration.getJobStatus().ask(question);
@@ -162,10 +174,11 @@ public class DocumentImporterHandler extends DocumentHandler
             XWikiDocument nextDocument = getDocument();
 
             // Merge and save
-            if (currentDocument != null && !currentDocument.isNew()) {
+            if (currentDocument != null && this.hasCurrentDocument == Boolean.TRUE) {
                 XWikiDocument previousDocument = getPreviousDocument();
 
                 if (previousDocument != null) {
+                    // 3 ways merge
                     XWikiDocument mergedDocument = currentDocument.clone();
 
                     MergeResult documentMergeResult =
@@ -173,7 +186,8 @@ public class DocumentImporterHandler extends DocumentHandler
                             this.configuration.getMergeConfiguration(), context);
 
                     if (documentMergeResult.isModified()) {
-                        if (this.configuration.isInteractive() && !documentMergeResult.getErrors().isEmpty()) {
+                        if (this.configuration.isInteractive()
+                            && !documentMergeResult.getLog().getLogs(LogLevel.ERROR).isEmpty()) {
                             XWikiDocument documentToSave =
                                 askDocumentToSave(currentDocument, previousDocument, nextDocument, mergedDocument);
 
@@ -189,7 +203,19 @@ public class DocumentImporterHandler extends DocumentHandler
                         new XarEntryMergeResult(new XarEntry(mergedDocument.getDocumentReference(),
                             mergedDocument.getLanguage()), documentMergeResult);
                 } else {
-                    saveDocument(nextDocument, comment, context);
+                    // already existing document in database but without previous version
+                    if (!currentDocument.equals(nextDocument)) {
+                        XWikiDocument documentToSave;
+                        if (this.configuration.isInteractive()) {
+                            documentToSave = askDocumentToSave(currentDocument, previousDocument, nextDocument, null);
+                        } else {
+                            documentToSave = nextDocument;
+                        }
+
+                        if (documentToSave != currentDocument) {
+                            saveDocument(documentToSave, comment, context);
+                        }   
+                    }
                 }
             } else {
                 saveDocument(nextDocument, comment, context);
@@ -218,6 +244,10 @@ public class DocumentImporterHandler extends DocumentHandler
             }
 
             existingDocument = translatedDocument;
+        }
+
+        if (this.hasCurrentDocument == null) {
+            this.hasCurrentDocument = !existingDocument.isNew();
         }
 
         return existingDocument;
