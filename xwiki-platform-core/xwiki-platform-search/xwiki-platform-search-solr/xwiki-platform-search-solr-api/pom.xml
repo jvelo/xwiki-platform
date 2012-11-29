@@ -33,7 +33,7 @@
   <name>XWiki Platform - Search - Solr - API</name>
   <description>Solr engine management: configuration, indexing, listeners, script service, etc. This module does not handle the search queries.</description>
   <properties>
-    <solr.version>3.6.1</solr.version>
+    <solr.version>4.0.0</solr.version>
   </properties>
   <dependencies>
     <!-- Solr -->
@@ -52,6 +52,12 @@
       <groupId>org.apache.solr</groupId>
       <artifactId>solr-cell</artifactId>
       <version>${solr.version}</version>
+    </dependency>
+    <!-- Spatial -->
+    <dependency>
+      <groupId>com.vividsolutions</groupId>
+      <artifactId>jts</artifactId>
+      <version>1.12</version>
     </dependency>
 
     <!-- Apache Commons -->
