@@ -85,6 +85,7 @@ com.xpn.xwiki.objects.meta.DBListMetaClass
 com.xpn.xwiki.objects.meta.DBTreeListMetaClass
 com.xpn.xwiki.objects.meta.EmailMetaClass
 com.xpn.xwiki.objects.meta.GroupsMetaClass
+com.xpn.xwiki.objects.meta.LatLonMetaClass
 com.xpn.xwiki.objects.meta.LevelsMetaClass
 com.xpn.xwiki.objects.meta.NumberMetaClass
 com.xpn.xwiki.objects.meta.PageMetaClass
