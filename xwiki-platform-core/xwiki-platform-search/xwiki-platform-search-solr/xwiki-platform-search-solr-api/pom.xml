@@ -73,12 +73,6 @@
       <artifactId>jts</artifactId>
       <version>1.12</version>
     </dependency>
-    <!-- Spatial -->
-    <dependency>
-      <groupId>com.vividsolutions</groupId>
-      <artifactId>jts</artifactId>
-      <version>1.12</version>
-    </dependency>
 
     <!-- Apache Commons -->
     <dependency>

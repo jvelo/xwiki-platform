@@ -35,7 +35,6 @@ import org.xwiki.search.solr.internal.api.SolrIndexException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObjectReference;
 import com.xpn.xwiki.objects.BaseProperty;
-import com.xpn.xwiki.objects.PropertyInterface;
 
 /**
  * Extract the metadata to be indexed from object properties.
@@ -47,6 +46,9 @@ import com.xpn.xwiki.objects.PropertyInterface;
 @Named("object_property")
 public class ObjectPropertySolrMetadataExtractor extends AbstractSolrMetadataExtractor
 {
+    /**
+     * Map of field contributors that can contribute fields to solr documents.
+     */
     @Inject
     private Map<String, ObjectPropertyFieldContributor> fieldContributors;
     

@@ -51,7 +51,7 @@ public interface ObjectPropertyFieldContributor
         private Object value;
 
         /**
-         * Field constructor that takes a name/value pair
+         * Field constructor that takes a name/value pair.
          * 
          * @param name this field's name
          * @param value this field's value
@@ -80,7 +80,7 @@ public interface ObjectPropertyFieldContributor
     }
 
     /**
-     * Contribute metadata to a solr document for an object property
+     * Contribute metadata to a solr document for an object property.
      * 
      * @param objectProperty the object property for which to contribute
      * @return the contributed fields or an empty list of no field is contributed
