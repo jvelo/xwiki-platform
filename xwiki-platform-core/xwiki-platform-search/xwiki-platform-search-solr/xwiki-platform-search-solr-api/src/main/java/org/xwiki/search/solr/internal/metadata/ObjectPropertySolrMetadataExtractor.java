@@ -59,7 +59,6 @@ public class ObjectPropertySolrMetadataExtractor extends AbstractSolrMetadataExt
             DocumentReference documentReference = new DocumentReference(objectReference.getParent());
 
             XWikiDocument document = getDocument(documentReference);
-
             BaseProperty<ObjectPropertyReference> objectProperty = document.getXObjectProperty(objectPropertyReference);
 
             XWikiDocument xclass = getDocument(objectProperty.getObject().getXClassReference());
@@ -72,6 +71,10 @@ public class ObjectPropertySolrMetadataExtractor extends AbstractSolrMetadataExt
             solrDocument.addField(Fields.PROPERTY_NAME, objectProperty.getName());
             solrDocument.addField(Fields.PROPERTY_VALUE, objectProperty.getValue());
             solrDocument.addField(Fields.TYPE, EntityType.OBJECT_PROPERTY.name());
+
+            if (property instanceof LatLonClass) {
+                solrDocument.addField("property_geo", objectProperty.getValue());
+            }
 
             if (property instanceof LatLonClass) {
                 solrDocument.addField("property_geo", objectProperty.getValue());
