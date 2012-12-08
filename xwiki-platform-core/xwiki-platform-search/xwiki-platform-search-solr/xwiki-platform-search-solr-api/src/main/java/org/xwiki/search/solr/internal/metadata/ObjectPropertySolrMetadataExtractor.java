@@ -19,6 +19,9 @@
  */
 package org.xwiki.search.solr.internal.metadata;
 
+import java.util.Map;
+
+import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.solr.common.SolrInputDocument;
@@ -33,7 +36,6 @@ import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObjectReference;
 import com.xpn.xwiki.objects.BaseProperty;
 import com.xpn.xwiki.objects.PropertyInterface;
-import com.xpn.xwiki.objects.classes.LatLonClass;
 
 /**
  * Extract the metadata to be indexed from object properties.
@@ -45,6 +47,9 @@ import com.xpn.xwiki.objects.classes.LatLonClass;
 @Named("object_property")
 public class ObjectPropertySolrMetadataExtractor extends AbstractSolrMetadataExtractor
 {
+    @Inject
+    private Map<String, ObjectPropertyFieldContributor> fieldContributors;
+    
     @Override
     public SolrInputDocument getSolrDocument(EntityReference entityReference) throws SolrIndexException,
         IllegalArgumentException
@@ -61,25 +66,19 @@ public class ObjectPropertySolrMetadataExtractor extends AbstractSolrMetadataExt
             XWikiDocument document = getDocument(documentReference);
             BaseProperty<ObjectPropertyReference> objectProperty = document.getXObjectProperty(objectPropertyReference);
 
-            XWikiDocument xclass = getDocument(objectProperty.getObject().getXClassReference());
-            PropertyInterface property = xclass.getXClass().get(objectProperty.getName());
-
             solrDocument.addField(Fields.ID, getId(objectPropertyReference));
             addDocumentFields(documentReference, solrDocument);
             solrDocument.addField(Fields.TYPE, objectPropertyReference.getType().name());
             solrDocument.addField(Fields.CLASS, compactSerializer.serialize(classReference));
             solrDocument.addField(Fields.PROPERTY_NAME, objectProperty.getName());
             solrDocument.addField(Fields.PROPERTY_VALUE, objectProperty.getValue());
-            solrDocument.addField(Fields.TYPE, EntityType.OBJECT_PROPERTY.name());
 
-            if (property instanceof LatLonClass) {
-                solrDocument.addField("property_geo", objectProperty.getValue());
+            for (ObjectPropertyFieldContributor contributor: this.fieldContributors.values()) {
+                for (ObjectPropertyFieldContributor.Field field : contributor.contribute(objectProperty)) {
+                    solrDocument.addField(field.getName(), field.getValue());
+                }
             }
-
-            if (property instanceof LatLonClass) {
-                solrDocument.addField("property_geo", objectProperty.getValue());
-            }
-
+            
             return solrDocument;
         } catch (Exception e) {
             throw new SolrIndexException(String.format("Failed to get Solr document for '%s'",
